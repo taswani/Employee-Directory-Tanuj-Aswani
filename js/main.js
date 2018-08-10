@@ -57,7 +57,6 @@ $('.modal-prev').on('click', function (e) {
   selected = $('.modal div:visible');
 })
 
-
 //The on-click event for the next button.
 $('.modal-next').on('click', function (e) {
   numSelected = selected[0].classList.item(1);
@@ -76,8 +75,15 @@ $('.modal-next').on('click', function (e) {
 
 //The on-click event for the card to modal window transition.
 $('.card').on('click', function (e) {
+  $('.modal-next').removeAttr('disabled');
+  $('.modal-prev').removeAttr('disabled');
   let num = e.target.classList.item(1);
   num = parseInt(num);
+  if (num === 0) {
+    $('.modal-prev').attr('disabled', 'disabled');
+  } else if (num === 11) {
+    $('.modal-next').attr('disabled', 'disabled');
+  }
   $('.modal').hide();
   $('.modal-container').show();
   $('.modal.' + num).show();
