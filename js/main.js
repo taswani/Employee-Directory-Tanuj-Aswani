@@ -194,11 +194,3 @@ function addDOB () {
     $('.modal-info-container.' + i).append('<p class="modal-text"> Birthday: ' + employeeDOB[i] + '</p>');
   };
 }
-
-
-
-//CSS Changes:
-//made changes to background color, border color/size/radius, added box-shadows,
-//changed text color overall, changed text color/size on hover,
-//changed colors of prev/next/exit buttons,
-//changed the margin space between the modal-btn-container and the modal itself.
