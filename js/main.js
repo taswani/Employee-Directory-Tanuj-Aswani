@@ -111,6 +111,22 @@ $('.search-submit').on('click', function () {
   }
 })
 
+//On keyup event that resets page when there is no input value after a search.
+$('.search-input').on('keyup', function () {
+  let input = $('.search-input').val().toLowerCase();
+  if (input === "") {
+    $('.card').show();
+  }
+})
+
+//On click event that resets page when there is no input value after a search.
+$('.search-input').on('click', function () {
+  let input = $('.search-input').val().toLowerCase();
+  if (input === "") {
+    $('.card').show();
+  }
+})
+
 //The AJAX call to the randomuser API that queries for US only nationalities.
 //Runs 12 times through a loop to add information for a total of 12 employees.
 //Calls all the functions that add information to the cards and modal windows once the response is returned successfully.
