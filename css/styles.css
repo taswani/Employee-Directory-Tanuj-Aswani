@@ -193,7 +193,7 @@ header h1 {
     padding: 15px 15px 15px;;
     margin: 1px auto auto;
     background: rgba(255, 255, 255, 1);
-    border-radius: 0.25em;
+    border-radius: 0.5em;
     border: 2px solid #006666;
 }
 
@@ -206,7 +206,7 @@ header h1 {
     color: rgba(255, 255, 255, 0.9);
     padding: 0.75em 1.5em;
     background:  #009999;
-    border-radius: 0.35em;
+    border-radius: 0.5em;
     transition: .4s ease-out;
     outline: none;
   }

@@ -7,9 +7,11 @@ let employeeState = []; //Intializing Array for employeeState.
 let employeeCell = []; //Intializing Array for employeeCell.
 let employeeDOB = []; //Intializing Array for employeeDOB.
 let employeeLocation = []; //Intializing Array for employeeLocation.
-let ajax = false; //Intializing ajax variable as a boolean to be changed by ajaxStop function.
+let searchResults = []; //Intializing Array for search results.
 let selected; //Intializing a selected variable to show which modal window is active.
 let numSelected; //Intializing a numSelected variable to show which number modal window user is currently on.
+let ajax = false; //Intializing ajax variable as a boolean to be changed by ajaxStop function.
+let searchMode = false; //Intializing searchMode variable as a boolean to be changed by search functions.
 
 //Function that starts the page by dynamically creating all the html necessary for the search bar, modal window, and cards.
 (function startPage () {
@@ -42,35 +44,73 @@ $('.modal-close-btn').on('click', function () {
 });
 
 //The on-click event for the prev button.
+//Also accounts for the iteration through windows when a search is ongoing.
 $('.modal-prev').on('click', function (e) {
-  numSelected = selected[0].classList.item(1);
-  numSelected = parseInt(numSelected);
-  $('.modal').hide();
-  numSelected = numSelected - 1;
-  if (numSelected < 1) {
-    $('.modal-prev').attr('disabled', 'disabled');
-  } else if (numSelected >= 1 && numSelected <= 10) {
-    $('.modal-prev').removeAttr('disabled');
-    $('.modal-next').removeAttr('disabled');
+  if (searchMode) {
+    for (let i = 0; i < searchResults.length; i++) {
+      if ($(searchResults[0][0]).is(':visible')) {
+        $('.modal-prev').attr('disabled', 'disabled');
+      } else {
+        $('.modal-prev').removeAttr('disabled');
+        $('.modal-next').removeAttr('disabled');
+      }
+      if ($(searchResults[i][0]).is(':visible')) {
+        $(searchResults[i][0]).hide();
+        $(searchResults[i - 1][0]).show();
+      }
+    }
+  } else {
+    numSelected = selected[0].classList.item(1);
+    numSelected = parseInt(numSelected);
+    $('.modal').hide();
+    numSelected = numSelected - 1;
+    if (numSelected < 1) {
+      $('.modal-prev').attr('disabled', 'disabled');
+    } else if (numSelected >= 1 && numSelected <= 10) {
+      $('.modal-prev').removeAttr('disabled');
+      $('.modal-next').removeAttr('disabled');
+    }
+    $('.modal.' + numSelected).show();
+    selected = $('.modal div:visible');
   }
-  $('.modal.' + numSelected).show();
-  selected = $('.modal div:visible');
 })
 
 //The on-click event for the next button.
+//Also accounts for the iteration through windows when a search is ongoing.
+//Needs additional code compared to the prev button because of the interaction of [i + 1] while looping.
+//  -added a break statement as well as a means of checking for last modal winow in list even after break.
 $('.modal-next').on('click', function (e) {
-  numSelected = selected[0].classList.item(1);
-  numSelected = parseInt(numSelected);
-  $('.modal').hide();
-  numSelected = numSelected + 1;
-  if (numSelected > 10) {
-    $('.modal-next').attr('disabled', 'disabled');
-  } else if (numSelected <= 10 && numSelected >= 1){
-    $('.modal-next').removeAttr('disabled');
-    $('.modal-prev').removeAttr('disabled');
+  if (searchMode) {
+    for (let i = 0; i < searchResults.length; i++) {
+      if ($(searchResults[(searchResults.length - 1)][0]).is(':visible')) {
+        $('.modal-next').attr('disabled', 'disabled');
+      } else {
+        $('.modal-prev').removeAttr('disabled');
+        $('.modal-next').removeAttr('disabled');
+      }
+      if ($(searchResults[i][0]).is(':visible')) {
+        $(searchResults[i][0]).hide();
+        $(searchResults[i + 1][0]).show();
+        if ($(searchResults[(searchResults.length - 1)][0]).is(':visible')) {
+          $('.modal-next').attr('disabled', 'disabled');
+        }
+        break;
+      }
+    }
+  } else {
+    numSelected = selected[0].classList.item(1);
+    numSelected = parseInt(numSelected);
+    $('.modal').hide();
+    numSelected = numSelected + 1;
+    if (numSelected > 10) {
+      $('.modal-next').attr('disabled', 'disabled');
+    } else if (numSelected <= 10 && numSelected >= 1){
+      $('.modal-next').removeAttr('disabled');
+      $('.modal-prev').removeAttr('disabled');
+    }
+    $('.modal.' + numSelected).show();
+    selected = $('.modal div:visible');
   }
-  $('.modal.' + numSelected).show();
-  selected = $('.modal div:visible');
 })
 
 //The on-click event for the card to modal window transition.
@@ -85,8 +125,15 @@ $('.card').on('click', function (e) {
     $('.modal-next').attr('disabled', 'disabled');
   }
   $('.modal').hide();
-  $('.modal-container').show();
   $('.modal.' + num).show();
+  $('.modal-container').show();
+  if (searchMode) {
+    if ($(searchResults[0][0]).is(':visible')) {
+      $('.modal-prev').attr('disabled', 'disabled');
+    } else if ($(searchResults[(searchResults.length - 1)][0]).is(':visible')) {
+      $('.modal-next').attr('disabled', 'disabled');
+    }
+  }
   selected = $('.modal div:visible');
 });
 
@@ -98,6 +145,8 @@ $(document).ajaxStop(function () {
 //The on-click event for the search function.
 $('.search-submit').on('click', function () {
   if (ajax) {
+    searchMode = true;
+    searchResults = [];
     $('.card').hide();
     let input = $('.search-input').val().toLowerCase();
     for (let i = 0; i < employeeNames.length; i++) {
@@ -106,6 +155,7 @@ $('.search-submit').on('click', function () {
       let name = first + " " + last;
       if (name.includes(input)) {
         $('.card.' + i).show();
+        searchResults.push($('.modal.' + i));
       }
     };
   }
@@ -115,6 +165,7 @@ $('.search-submit').on('click', function () {
 $('.search-input').on('keyup', function () {
   let input = $('.search-input').val().toLowerCase();
   if (input === "") {
+    searchMode = false;
     $('.card').show();
   }
 })
@@ -123,6 +174,7 @@ $('.search-input').on('keyup', function () {
 $('.search-input').on('click', function () {
   let input = $('.search-input').val().toLowerCase();
   if (input === "") {
+    searchMode = false;
     $('.card').show();
   }
 })
